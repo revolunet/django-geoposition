@@ -7,17 +7,19 @@ __version__ = '.'.join(map(str, VERSION))
 
 
 class Geoposition(object):
-    def __init__(self, latitude, longitude):
+    def __init__(self, latitude, longitude, zoom=0):
         if isinstance(latitude, float) or isinstance(latitude, int):
             latitude = str(latitude)
         if isinstance(longitude, float) or isinstance(longitude, int):
             longitude = str(longitude)
-
+        if isinstance(zoom, float) or isinstance(zoom, int):
+            zoom = str(zoom)
         self.latitude = Decimal(latitude)
         self.longitude = Decimal(longitude)
+        self.zoom = zoom
 
     def __str__(self):
-        return "%s,%s" % (self.latitude, self.longitude)
+        return "%s,%s,%s" % (self.latitude, self.longitude, self.zoom)
 
     def __repr__(self):
         return "Geoposition(%s)" % str(self)

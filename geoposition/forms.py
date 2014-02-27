@@ -13,13 +13,19 @@ class GeopositionField(forms.MultiValueField):
     }
 
     def __init__(self, *args, **kwargs):
-        self.widget = GeopositionWidget()
-        fields = (
+        print args, kwargs
+        self.widget = GeopositionWidget(zoom=kwargs.get('zoom'))
+        fields = [
             forms.DecimalField(label=_('latitude')),
-            forms.DecimalField(label=_('longitude')),
-        )
+            forms.DecimalField(label=_('longitude'))
+        ]
+        if kwargs.get('zoom') is True:
+            fields.append(
+                forms.IntegerField(label=_('zoom'))
+            )
         if 'initial' in kwargs:
             kwargs['initial'] = Geoposition(*kwargs['initial'].split(','))
+        kwargs.pop('zoom')
         super(GeopositionField, self).__init__(fields, **kwargs)
 
     def widget_attrs(self, widget):

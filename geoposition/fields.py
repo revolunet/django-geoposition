@@ -12,8 +12,9 @@ class GeopositionField(models.Field):
     description = _("A geoposition (latitude and longitude)")
     __metaclass__ = models.SubfieldBase
 
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 42
+    def __init__(self, zoom=False, *args, **kwargs):
+        kwargs['max_length'] = 45
+        self.zoom = zoom
         super(GeopositionField, self).__init__(*args, **kwargs)
 
     def get_internal_type(self):
@@ -25,7 +26,7 @@ class GeopositionField(models.Field):
         if isinstance(value, Geoposition):
             return value
         if isinstance(value, list):
-            return Geoposition(value[0], value[1])
+            return Geoposition(*value)
 
         # default case is string
         value_parts = value.rsplit(',')
@@ -37,8 +38,12 @@ class GeopositionField(models.Field):
             longitude = value_parts[1]
         except IndexError:
             longitude = '0.0'
+        try:
+            zoom = value_parts[2]
+        except IndexError:
+            zoom = '0'
 
-        return Geoposition(latitude, longitude)
+        return Geoposition(latitude, longitude, zoom)
 
     def get_prep_value(self, value):
         return str(value)
@@ -49,7 +54,8 @@ class GeopositionField(models.Field):
 
     def formfield(self, **kwargs):
         defaults = {
-            'form_class': GeopositionFormField
+            'form_class': GeopositionFormField,
+            'zoom': self.zoom
         }
         defaults.update(kwargs)
         return super(GeopositionField, self).formfield(**defaults)

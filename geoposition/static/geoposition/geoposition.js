@@ -19,8 +19,10 @@ if (jQuery != undefined) {
                 $searchInput = $('<input>', {'type': 'search', 'placeholder': 'Start typing an address …'}),
                 $latitudeField = $container.find('input.geoposition:eq(0)'),
                 $longitudeField = $container.find('input.geoposition:eq(1)'),
+                $zoomField = $container.find('input.geoposition:eq(2)'),
                 latitude = parseFloat($latitudeField.val()) || 0,
                 longitude = parseFloat($longitudeField.val()) || 0,
+                zoom = parseFloat($zoomField.val()) || 15,
                 map,
                 mapLatLng,
                 mapOptions,
@@ -41,7 +43,7 @@ if (jQuery != undefined) {
                                 map.fitBounds(result.geometry.bounds);
                             } else {
                                 map.panTo(result.geometry.location);
-                                map.setZoom(18);
+                                map.setZoom(zoom);
                             }
                             marker.setPosition(result.geometry.location);
                             google.maps.event.trigger(marker, 'dragend');
@@ -104,7 +106,7 @@ if (jQuery != undefined) {
             mapLatLng = new google.maps.LatLng(latitude, longitude);
             mapOptions = $.extend({}, mapDefaults, {
                 'center': mapLatLng,
-                'zoom': latitude && longitude ? 15 : 1,
+                'zoom': latitude && longitude ? zoom : 1,
                 'streetViewControl': false,
                 'panControl': false
             });
@@ -120,6 +122,9 @@ if (jQuery != undefined) {
                 $longitudeField.val(this.position.lng());
                 doGeocode();
             });
+            google.maps.event.addListener(map, 'zoom_changed', function() {
+                $zoomField.val(this.getZoom());
+            });
             if ($latitudeField.val() && $longitudeField.val()) {
                 google.maps.event.trigger(marker, 'dragend');
             }
@@ -129,7 +134,7 @@ if (jQuery != undefined) {
                 var longitude = parseFloat($longitudeField.val()) || 0;
                 var center = new google.maps.LatLng(latitude, longitude);
                 map.setCenter(center);
-                map.setZoom(15);
+                map.setZoom(zoom);
                 marker.setPosition(center);
                 doGeocode();
             });
