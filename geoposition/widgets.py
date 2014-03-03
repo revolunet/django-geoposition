@@ -9,7 +9,6 @@ from .conf import settings
 
 class GeopositionWidget(forms.MultiWidget):
     def __init__(self, zoom=False, attrs=None):
-        print attrs
         widgets = [
             forms.TextInput(),
             forms.TextInput()
